@@ -1,12 +1,17 @@
 buildscript {
 	ext {
 		springBootVersion = '2.0.4.RELEASE'
+		hazelCastVersion = '3.10.4'
 	}
 	repositories {
 		mavenCentral()
+		mavenLocal()//this is added for oracle local
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath('se.transmode.gradle:gradle-docker:1.2')
 	}
 }
 
@@ -15,16 +20,80 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
+
+jar {
+    baseName = 'com.hazelcast.server'
+    version =  '0.0.1-SNAPSHOT'
+}
+
+
 group = 'com.hazelcast.server'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 10
 
-repositories {
-	mavenCentral()
+task buildDocker(type: Docker, dependsOn: build) {
+  push = project.hasProperty('push')
+  tag = 'kumarabhishek0809/com-hazelcast-server'
+  applicationName = jar.baseName
+  dockerfile = file('src/main/docker/Dockerfile')
+  doFirst {
+    copy {
+      from jar
+      into stageDir
+    }
+  }
 }
 
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',  
+        	'Implementation-Version': version,
+        	'Main-Class': 'com.example.demo.Application'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+repositories {
+	mavenCentral()
+	mavenLocal()//for oracle jar
+	maven { url "https://repo.spring.io/snapshot" }
+	maven { url "https://repo.spring.io/milestone" }
+}
+
+ext {
+    springCloudVersion = 'Finchley.SR1'
+}
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	compile('org.springframework.cloud:spring-cloud-starter-config')
+	compile "com.hazelcast:hazelcast-spring:${hazelCastVersion}"
+	compile group: 'com.hazelcast', name: 'hazelcast', version: "${hazelCastVersion}"
+	compile group: 'com.hazelcast', name: 'hazelcast-client', version: "${hazelCastVersion}"
+    compile('com.oracle:ojdbc:1.6')
+    runtime('com.oracle:ojdbc:1.6')
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    //for Load Balancing
+    compile('org.springframework.cloud:spring-cloud-starter-netflix-ribbon')
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
+    compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0'
+    compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.0'
+    compile group: 'javax.activation', name: 'activation', version: '1.1.1'
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
+	compile group: 'com.hazelcast', name: 'hazelcast-hibernate5', version: '1.0'
+	compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.6.Final'
+	compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.6.Final'
 }
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+    }
+    
