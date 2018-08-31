@@ -19,7 +19,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-
+apply plugin: 'docker'
 
 jar {
     baseName = 'com.hazelcast.server'
@@ -74,9 +74,6 @@ dependencies {
 	compile "com.hazelcast:hazelcast-spring:${hazelCastVersion}"
 	compile group: 'com.hazelcast', name: 'hazelcast', version: "${hazelCastVersion}"
 	compile group: 'com.hazelcast', name: 'hazelcast-client', version: "${hazelCastVersion}"
-    compile('com.oracle:ojdbc:1.6')
-    runtime('com.oracle:ojdbc:1.6')
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-actuator')
     //for Load Balancing
@@ -87,13 +84,10 @@ dependencies {
     compile group: 'javax.activation', name: 'activation', version: '1.1.1'
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
-	compile group: 'com.hazelcast', name: 'hazelcast-hibernate5', version: '1.0'
-	compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.6.Final'
-	compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.6.Final'
 }
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
-    }
+}
     
