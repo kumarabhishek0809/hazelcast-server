@@ -1,6 +1,14 @@
 spring:
-  profiles:
+  profiles :
     active: server
+  datasource:
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+    password: cache
+    tomcat:
+      initialSize: 20
+      max-active: 25
+    url: jdbc:oracle:thin:@localhost:1521:xe
+    username: cache
 debug: false
 management:
   security: false

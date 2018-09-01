@@ -69,6 +69,7 @@ ext {
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	compile('org.springframework.cloud:spring-cloud-starter-config')
 	compile "com.hazelcast:hazelcast-spring:${hazelCastVersion}"
@@ -76,8 +77,9 @@ dependencies {
 	compile group: 'com.hazelcast', name: 'hazelcast-client', version: "${hazelCastVersion}"
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-actuator')
-    //for Load Balancing
-    compile('org.springframework.cloud:spring-cloud-starter-netflix-ribbon')
+    //for oracle db
+    compile('com.oracle:ojdbc:1.6')
+    runtime('com.oracle:ojdbc:1.6')
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
     compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0'
     compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.0'
